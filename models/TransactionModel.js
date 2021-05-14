@@ -1,5 +1,4 @@
-
-var mongoose = require('mongoose');
+var mongoose = require("mongoose");
 
 /*
     TODO:   Complete the TransactionSchema which will contain the name,
@@ -7,7 +6,18 @@ var mongoose = require('mongoose');
 */
 
 var TransactionSchema = new mongoose.Schema({
-    // your code here
+  name: {
+    type: String,
+    required: true,
+  },
+  refno: {
+    type: Number,
+    required: true,
+  },
+  amount: {
+    type: Number,
+    required: true,
+  },
 });
 
-module.exports = mongoose.model('Transaction', TransactionSchema);
+module.exports = mongoose.model("Transaction", TransactionSchema);

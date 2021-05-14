@@ -1,6 +1,5 @@
 $(document).ready(function () {
-
-    /*
+  /*
     TODO:   The code below attaches a `keyup` event to `#refno` text field.
             The code checks if the current reference number entered by the user
             in the text field does not exist in the database.
@@ -17,11 +16,39 @@ $(document).ready(function () {
             - `#error` displays no error message
             - `#submit` is enabled
     */
-    $('#refno').keyup(function () {
-        // your code here
-    });
+  $("#refno").keyup(function () {
+    const formToBeSubmitted = $("#payment_form")[0];
+    const errorParagraph = $("#error");
+    const refnoField = formToBeSubmitted[1];
+    const myHeaders = new Headers();
 
-    /*
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+    async function checkRefNoAvailability() {
+      await fetch(
+        `http://localhost:9090/getCheckRefNo?${new URLSearchParams(
+          {
+            refno: refnoField.value,
+          },
+          {
+            headers: myHeaders,
+          }
+        ).toString()}`
+      )
+        .then((res) => true)
+        .catch((error) => (error.response.status === 403 ? 403 : false));
+    }
+
+    //  All Logic Here
+    if (checkRefNoAvailability()) {
+      //  Available
+    } else if (checkRefNoAvailability() === 403) {
+      //  Not available
+    } else {
+    }
+  });
+
+  /*
     TODO:   The code below attaches a `click` event to `#submit` button.
             The code checks if all text fields are not empty. The code
             should communicate asynchronously with the server to save
@@ -37,19 +64,54 @@ $(document).ready(function () {
             The name, reference number, and amount fields are reset to empty
             values.
     */
-    $('#submit').click(function () {
-        // your code here
-    });
+  $("#submit").click(function () {
+    const formToBeSubmitted = $("#payment_form")[0];
+    const errorParagraph = $("#error");
+    const nameField = formToBeSubmitted[0];
+    const refnoField = formToBeSubmitted[1];
+    const amountField = formToBeSubmitted[2];
 
-    /*
+    async function submitForm(formData, myHeaders) {
+      await fetch(`http://localhost:9090/add?${formData}`, {
+        headers: myHeaders,
+      }).then((response) => {
+        //    Clearing Form
+        nameField.value = "";
+        refnoField.value = "";
+        amountField.value = "";
+        errorParagraph.text("");
+      });
+    }
+
+    //  All Logic Here
+    if (
+      nameField.value !== "" &&
+      refnoField.value !== "" &&
+      amountField.value !== ""
+    ) {
+      const myHeaders = new Headers();
+      const formData = new URLSearchParams({
+        name: nameField.value,
+        refno: refno.value,
+        amount: amountField.value,
+      }).toString();
+
+      myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+      submitForm(formData, myHeaders);
+    } else {
+      errorParagraph.text("Fill up all fields.");
+    }
+  });
+
+  /*
     TODO:   The code below attaches a `click` event to `.remove` buttons
             inside the `<div>` `#cards`.
             The code deletes the specific transaction associated to the
             specific `.remove` button, then removes the its parent `<div>` of
             class `.card`.
     */
-    $('#cards').on('click', '.remove', function () {
-        // your code here
-    });
-
-})
+  $("#cards").on("click", ".remove", function () {
+    // your code here
+  });
+});
