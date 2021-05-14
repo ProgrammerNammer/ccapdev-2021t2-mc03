@@ -82,18 +82,6 @@ $(document).ready(function () {
     const refnoField = formToBeSubmitted[1];
     const amountField = formToBeSubmitted[2];
 
-    async function submitForm(formData, myHeaders) {
-      await fetch(`http://localhost:9090/getCheckRefNo?${formData}`, {
-        headers: myHeaders,
-      }).then((response) => {
-        //    Clearing Form
-        nameField.value = "";
-        refnoField.value = "";
-        amountField.value = "";
-        errorParagraph.text("");
-      });
-    }
-
     //  All Logic Here
     if (
       nameField.value !== "" &&
@@ -103,11 +91,28 @@ $(document).ready(function () {
       const myHeaders = new Headers();
       const formData = new URLSearchParams({
         name: nameField.value,
-        refno: refno.value,
+        refno: refnoField.value,
         amount: amountField.value,
       }).toString();
 
       myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+      async function submitForm(formData, myHeaders) {
+        await fetch(`http://localhost:9090/add?${formData}`, {
+          headers: myHeaders,
+        }).then((response) => {
+          const cards = $("#cards");
+          cards.append(
+            `<div class="card"> <img src="/images/icon.webp" class="icon"> <div class="info"> <p class="text"> ${nameField.value} </p> <p class="text"> ${refnoField.value} </p> <p class="text"> Php ${amount.value} </p> </div> <button class="remove"> X </button> </div>`
+          );
+
+          //    Clearing Form
+          nameField.value = "";
+          refnoField.value = "";
+          amountField.value = "";
+          errorParagraph.text("");
+        });
+      }
 
       submitForm(formData, myHeaders);
     } else {
@@ -122,7 +127,29 @@ $(document).ready(function () {
             specific `.remove` button, then removes the its parent `<div>` of
             class `.card`.
     */
-  $("#cards").on("click", ".remove", function () {
-    // your code here
+  $("#cards").on("click", ".remove", function (e) {
+    const card = $(e.target).parents(".card");
+    const children = card.children()[1];
+    const name = children.getElementsByTagName("p")[0].innerHTML;
+    const refno = parseInt(children.getElementsByTagName("p")[1].innerHTML);
+    const amount = parseInt(children.getElementsByTagName("p")[2].innerHTML);
+    const formData = new URLSearchParams({
+      name,
+      refno,
+      amount,
+    }).toString();
+    const myHeaders = new Headers();
+
+    myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
+
+    async function deleteCard() {
+      await fetch(`http://localhost:9090/delete?${formData}`, {
+        headers: myHeaders,
+      }).then((response) => {
+        card.remove();
+      });
+    }
+
+    deleteCard();
   });
 });

@@ -34,7 +34,6 @@ const controller = {
     db.findOne(Transaction, { refno }, "refno", (account) =>
       account ? res.sendStatus(409) : res.sendStatus(200)
     );
-    // your code here
   },
 
   /*
@@ -69,7 +68,21 @@ const controller = {
             transactions in `index.hbs`.
     */
   getDelete: function (req, res) {
-    // your code here
+    const { refno } = req.query;
+
+    db.deleteOne(
+      Transaction,
+      {
+        refno,
+      },
+      (success, error) => {
+        if (error) {
+          res.sendStatus(403);
+        }
+
+        res.sendStatus(200);
+      }
+    );
   },
 };
 
