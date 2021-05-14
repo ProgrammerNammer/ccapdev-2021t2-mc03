@@ -19,7 +19,8 @@ $(document).ready(function () {
   $("#refno").keyup(function () {
     const formToBeSubmitted = $("#payment_form")[0];
     const errorParagraph = $("#error");
-    const refnoField = formToBeSubmitted[1];
+    const refnoField = $("#refno");
+    const submitField = $("#submit");
     const myHeaders = new Headers();
 
     myHeaders.append("Content-Type", "application/x-www-form-urlencoded");
@@ -28,24 +29,35 @@ $(document).ready(function () {
       await fetch(
         `http://localhost:9090/getCheckRefNo?${new URLSearchParams(
           {
-            refno: refnoField.value,
+            refno: refnoField.val(),
           },
           {
             headers: myHeaders,
           }
         ).toString()}`
-      )
-        .then((res) => true)
-        .catch((error) => (error.response.status === 403 ? 403 : false));
+      ).then((res) => {
+        switch (res.status) {
+          case 200:
+            refnoField.css("background-color", "#E3E3E3");
+            errorParagraph.text("");
+            submitField.prop("disabled", false);
+            break;
+          case 409:
+            refnoField.css("background-color", "red");
+            errorParagraph.text("Reference number already in the database");
+            submitField.prop("disabled", true);
+            return 409;
+            break;
+          default:
+            //  ERROR
+            console.log(res.status);
+            return false;
+        }
+      });
     }
 
     //  All Logic Here
-    if (checkRefNoAvailability()) {
-      //  Available
-    } else if (checkRefNoAvailability() === 403) {
-      //  Not available
-    } else {
-    }
+    checkRefNoAvailability();
   });
 
   /*
@@ -72,7 +84,7 @@ $(document).ready(function () {
     const amountField = formToBeSubmitted[2];
 
     async function submitForm(formData, myHeaders) {
-      await fetch(`http://localhost:9090/add?${formData}`, {
+      await fetch(`http://localhost:9090/getCheckRefNo?${formData}`, {
         headers: myHeaders,
       }).then((response) => {
         //    Clearing Form

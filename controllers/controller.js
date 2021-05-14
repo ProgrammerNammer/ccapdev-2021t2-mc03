@@ -24,7 +24,11 @@ const controller = {
             reference number, otherwise, it returns an empty string.
     */
   getCheckRefNo: function (req, res) {
-    res.sendStatus(200);
+    const { refno } = req.query;
+
+    db.findOne(Transaction, { refno }, "refno", (account) =>
+      account ? res.sendStatus(409) : res.sendStatus(200)
+    );
     // your code here
   },
 
