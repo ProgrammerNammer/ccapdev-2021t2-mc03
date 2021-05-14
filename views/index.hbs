@@ -25,9 +25,10 @@
             <!--
                 TODO: Display all transactions here. Each transaction should be retrieved from the database and displayed through rendering `../partials/card.hbs`.
             -->
-            <div id="cards">
-            <!-- your code here -->
-            </div>
+            {{!-- <div id="cards"> --}}
+                {{#each transactions}}
+                    {{>card this}}
+                {{/each}}
         </div>
     </div>
 </body>

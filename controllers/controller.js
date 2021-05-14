@@ -12,8 +12,13 @@ const controller = {
             transactions currently stored in the database.
     */
   getIndex: function (req, res) {
-    // your code here
-    res.render("index"); // This is to load the page initially
+    async function getTransactions() {
+      db.findMany(Transaction, {}, "name refno amount", (transactions) => {
+        res.render("index", { transactions });
+      });
+    }
+
+    getTransactions();
   },
 
   /*

@@ -17,7 +17,6 @@ $(document).ready(function () {
             - `#submit` is enabled
     */
   $("#refno").keyup(function () {
-    const formToBeSubmitted = $("#payment_form")[0];
     const errorParagraph = $("#error");
     const refnoField = $("#refno");
     const submitField = $("#submit");
